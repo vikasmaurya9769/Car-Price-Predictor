@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Car Price Prediction</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="static\css\style.css">
+ 
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <i class="fa-solid fa-car"></i>
+      <h2>Car Price Prediction</h2>
+    </div>
+
+    <form id="predictForm">
+      <!-- Same inputs as before... -->
+      <div class="form-group">
+        <label>Company</label>
+        <select name="oem" id="company" required>
+          <option value="">Select</option>
+          {% for c in oem %}
+            <option value="{{c}}">{{c}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Model</label>
+        <select name="model" id="model" required>
+          <option value="">Select</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Variant</label>
+        <select name="variant" id="variant" required>
+          <option value="">Select</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Year</label>
+        <select name="myear" required>
+          <option value="">Select</option>
+          {% for y in myear %}
+            <option value="{{y}}">{{y}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Body Type</label>
+        <select name="body" required>
+          <option value="">Select</option>
+          {% for b in body %}
+            <option value="{{b}}">{{b}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Fuel</label>
+        <select name="fuel" required>
+          <option value="">Select</option>
+          {% for f in fuel %}
+            <option value="{{f}}">{{f}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Transmission</label>
+        <select name="transmission" required>
+          <option value="">Select</option>
+          {% for t in transmission %}
+            <option value="{{t}}">{{t}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Owner Type</label>
+        <select name="owner_type" required>
+          <option value="">Select</option>
+          {% for o in owner_type %}
+            <option value="{{o}}">{{o}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Colour</label>
+        <select name="Color" required>
+          <option value="">Select</option>
+          {% for c in Color %}
+            <option value="{{c}}">{{c}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Kilometers Driven</label>
+        <input type="number" name="km" placeholder="Enter KM" required>
+      </div>
+      <div class="form-group">
+        <label>State</label>
+        <select name="state" id="state" required>
+          <option value="">Select</option>
+          {% for s in state %}
+            <option value="{{s}}">{{s}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>City</label>
+        <select name="City" id="city" required>
+          <option value="">Select</option>
+        </select>
+      </div>
+      <div class="full-width">
+        <button type="submit">Predict Price</button>
+      </div>
+    </form>
+
+    <!-- Spinner -->
+    <div class="spinner" id="spinner">
+      <i class="fa-solid fa-spinner"></i>
+      <p>Please wait... predicting price</p>
+    </div>
+
+    <!-- Result Section -->
+    <div class="result-section" id="resultSection">
+      <div class="result-box" id="resultBox"></div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("company").addEventListener("change", function() {
+      fetch(`/get_models/${this.value}`)
+        .then(res => res.json())
+        .then(data => {
+          let dropdown = document.getElementById("model");
+          dropdown.innerHTML = "<option value=''>Select</option>";
+          data.forEach(m => dropdown.innerHTML += `<option value="${m}">${m}</option>`);
+        });
+    });
+
+    document.getElementById("model").addEventListener("change", function() {
+      fetch(`/get_variants/${this.value}`)
+        .then(res => res.json())
+        .then(data => {
+          let dropdown = document.getElementById("variant");
+          dropdown.innerHTML = "<option value=''>Select</option>";
+          data.forEach(v => dropdown.innerHTML += `<option value="${v}">${v}</option>`);
+        });
+    });
+
+    const stateCityMap = {{ state_city_map|tojson }};
+    document.getElementById("state").addEventListener("change", function() {
+      let cities = stateCityMap[this.value] || [];
+      let cityDropdown = document.getElementById("city");
+      cityDropdown.innerHTML = "<option value=''>Select</option>";
+      cities.forEach(c => cityDropdown.innerHTML += `<option value="${c}">${c}</option>`);
+    });
+
+    document.getElementById("predictForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      // Show spinner & hide result
+      document.getElementById("spinner").style.display = "block";
+      document.getElementById("resultSection").style.display = "none";
+
+      let formData = new FormData(this);
+      fetch("/predict", { method: "POST", body: formData })
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("spinner").style.display = "none";
+
+          if (data.error) {
+            alert("Error: " + data.error);
+            return;
+          }
+
+          let price = data.price;
+          document.getElementById("resultBox").innerText =
+            `Predicted Price: ₹${price.toLocaleString()}`;
+          document.getElementById("resultSection").style.display = "block";
+        })
+        .catch(err => {
+          document.getElementById("spinner").style.display = "none";
+          alert("Something went wrong!");
+          console.error(err);
+        });
+    });
+  </script>
+</body>
+</html>

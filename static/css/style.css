@@ -1,0 +1,76 @@
+body {
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: #fff;
+      padding: 40px 50px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      width: 95%;
+      max-width: 1000px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .header i {
+      font-size: 45px;
+      color: #007bff;
+      margin-bottom: 10px;
+    }
+    h2 {
+      font-size: 28px;
+      color: #222;
+      font-weight: 700;
+      margin: 0;
+    }
+    form {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px 30px;
+    }
+    .form-group { display: flex; flex-direction: column; }
+    label { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: #333; }
+    select, input {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+    select:focus, input:focus { border-color: #007bff; outline: none; }
+    .full-width { grid-column: span 2; }
+    button {
+      width: 100%; padding: 14px; border: none; border-radius: 8px;
+      font-size: 16px; font-weight: 600; background: #007bff; color: white;
+      cursor: pointer; transition: background 0.3s;
+    }
+    button:hover { background: #0056b3; }
+    .result-section { margin-top: 30px; display: none; }
+    .result-box {
+      padding: 15px; border-radius: 8px; text-align: center;
+      font-size: 20px; font-weight: 600; background: #e9f4ff; color: #004085;
+    }
+
+    /* --- Loading Spinner --- */
+    .spinner {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+    .spinner i {
+      font-size: 30px;
+      color: #007bff;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
